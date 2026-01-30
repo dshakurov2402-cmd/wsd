@@ -5,53 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abol Messenger Pro</title>
     <style>
-        :root { --bg: #0e1621; --panel: #17212b; --blue: #50a2e3; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .app-container { background: var(--panel); width: 100%; max-width: 420px; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+        :root { --bg: #0e1621; --panel: #17212b; --blue: #2481cc; --text: #ffffff; --msg-my: #2b5278; --msg-friend: #182533; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .app { background: var(--panel); width: 100%; max-width: 450px; height: 100vh; display: flex; flex-direction: column; position: relative; }
         .hidden { display: none !important; }
         
-        /* Экран входа */
-        .auth-screen { padding: 40px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        input { background: #1f2936; border: 1px solid #242f3d; color: white; padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; outline: none; }
-        button { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
+        /* Авторизация */
+        .auth { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+        .auth h1 { color: var(--blue); margin-bottom: 30px; }
+        input { width: 100%; background: #242f3d; border: 1px solid #0e1621; color: white; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
+        .btn { width: 100%; background: var(--blue); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 16px; }
 
         /* Шапка чата */
-        .chat-header { background: #242f3d; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #0e1621; }
-        .back-btn { cursor: pointer; font-size: 20px; }
+        .header { background: #242f3d; padding: 10px 15px; display: flex; align-items: center; gap: 15px; height: 50px; }
+        .back { cursor: pointer; font-size: 24px; color: var(--blue); }
+        .status { font-size: 13px; color: #888; }
 
-        /* Область сообщений */
-        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; }
-        .msg { margin: 5px 0; padding: 8px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; position: relative; }
-        .my-msg { align-self: flex-end; background: #2b5278; border-bottom-right-radius: 2px; }
-        .other-msg { align-self: flex-start; background: #182533; border-bottom-left-radius: 2px; }
-        .sys-msg { align-self: center; background: rgba(0,0,0,0.3); font-size: 11px; padding: 3px 10px; border-radius: 10px; color: #aaa; margin: 10px 0; }
-
-        /* Поле ввода */
-        .input-area { padding: 15px; display: flex; gap: 10px; background: var(--panel); }
-        .input-area input { margin: 0; flex: 1; border-radius: 20px; }
+        /* Чат */
+        #messages { flex: 1; overflow-y: auto; padding: 15px; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-attachment: fixed; display: flex; flex-direction: column; gap: 8px; }
+        .msg { padding: 8px 14px; border-radius: 16px; max-width: 75%; font-size: 15px; line-height: 1.4; position: relative; word-wrap: break-word; }
+        .my { align-self: flex-end; background: var(--msg-my); border-bottom-right-radius: 4px; }
+        .friend { align-self: flex-start; background: var(--msg-friend); border-bottom-left-radius: 4px; }
+        .time { font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px; }
+        
+        /* Ввод */
+        .input-bar { padding: 10px 15px; background: var(--panel); display: flex; gap: 10px; align-items: center; border-top: 1px solid #0e1621; }
+        .input-bar input { margin: 0; border-radius: 25px; padding: 10px 20px; background: #242f3d; }
+        .send-btn { background: var(--blue); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; font-size: 18px; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div id="auth-screen" class="auth-screen">
-        <h2 style="color: var(--blue);">Abol Messenger</h2>
-        <input type="text" id="my-nick" placeholder="Ваш никнейм">
-        <input type="text" id="friend-nick" placeholder="Ник друга для чата">
-        <button onclick="startApp()">ВОЙТИ В ЧАТ</button>
-        <p style="font-size: 12px; color: #888; margin-top: 20px;">Введите ники друг друга, чтобы создать приватную комнату.</p>
+<div class="app">
+    <div id="screen-auth" class="auth">
+        <h1>Abol Messenger</h1>
+        <input type="text" id="in-my-nick" placeholder="Твой ник (например, damirka)">
+        <input type="text" id="in-friend-nick" placeholder="Кому будем писать?">
+        <button class="btn" onclick="initChat()">ВОЙТИ</button>
     </div>
 
-    <div id="chat-screen" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
-        <div class="chat-header">
-            <span class="back-btn" onclick="location.reload()">←</span>
-            <div id="chat-target">Чат</div>
+    <div id="screen-chat" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="header">
+            <span class="back" onclick="location.reload()">‹</span>
+            <div>
+                <div id="target-name" style="font-weight: 600;">Чат</div>
+                <div class="status">в сети</div>
+            </div>
         </div>
         <div id="messages"></div>
-        <div class="input-area">
-            <input type="text" id="msg-input" placeholder="Сообщение...">
-            <button onclick="send()">➤</button>
+        <div class="input-bar">
+            <input type="text" id="msg-field" placeholder="Сообщение...">
+            <button class="send-btn" onclick="handleSend()">➤</button>
         </div>
     </div>
 </div>
@@ -60,6 +64,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // Твои ключи из Firebase (уже встроены)
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
         authDomain: "kaka-chat-39bb6.firebaseapp.com",
@@ -71,68 +76,70 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let myNick = "";
-    let roomID = "";
+    let myName = "";
+    let room = "";
 
-    window.startApp = () => {
-        const me = document.getElementById('my-nick').value.trim().toLowerCase();
-        const friend = document.getElementById('friend-nick').value.trim().toLowerCase();
+    window.initChat = () => {
+        const me = document.getElementById('in-my-nick').value.trim().toLowerCase();
+        const friend = document.getElementById('in-friend-nick').value.trim().toLowerCase();
         
         if (me && friend) {
-            myNick = me;
-            roomID = [me, friend].sort().join("_"); // Уникальный ID комнаты
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('chat-screen').classList.remove('hidden');
-            document.getElementById('chat-target').innerText = "Чат с " + friend;
-            loadMessages();
+            myName = me;
+            room = [me, friend].sort().join("_");
+            document.getElementById('target-name').innerText = friend;
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('screen-chat').classList.remove('hidden');
+            startListening();
         }
     };
 
-    window.send = async () => {
-        const input = document.getElementById('msg-input');
-        const text = input.value.trim();
+    window.handleSend = async () => {
+        const field = document.getElementById('msg-field');
+        const text = field.value.trim();
         if (!text) return;
 
         // Команды
         if (text.startsWith('/')) {
             if (text === '/clear') document.getElementById('messages').innerHTML = "";
-            else if (text === '/about') alert("Abol Messenger v2.0\nDeveloper: Damir Shakurov");
-            input.value = ""; return;
+            else if (text === '/about') alert("Abol Messenger Pro v2.1\nРазработчик: Дамир Шакуров");
+            field.value = ""; return;
         }
 
         await addDoc(collection(db, "messages"), {
-            user: myNick,
-            room: roomID,
+            user: myName,
+            room: room,
             text: text,
-            createdAt: serverTimestamp()
+            time: serverTimestamp()
         });
-        input.value = "";
+        field.value = "";
     };
 
-    function loadMessages() {
+    function startListening() {
         const q = query(
             collection(db, "messages"),
-            where("room", "==", roomID),
-            orderBy("createdAt", "asc"),
-            limitToLast(50)
+            where("room", "==", room),
+            orderBy("time", "asc"),
+            limitToLast(40)
         );
 
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(q, (snap) => {
             const box = document.getElementById('messages');
             box.innerHTML = "";
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                const isMy = d.user === myNick;
+            snap.forEach(doc => {
+                const data = doc.data();
+                if (!data.text) return;
+                
+                const isMy = data.user === myName;
                 const div = document.createElement('div');
-                div.className = 'msg ' + (isMy ? 'my-msg' : 'other-msg');
-                div.innerText = d.text;
+                div.className = 'msg ' + (isMy ? 'my' : 'friend');
+                div.innerHTML = `<div>${data.text}</div><div class="time">${isMy ? '✓✓' : ''}</div>`;
                 box.appendChild(div);
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    document.getElementById('msg-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
+    document.getElementById('msg-field').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
 </script>
 </body>
 </html>
