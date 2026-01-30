@@ -3,58 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Telegram</title>
+    <title>Abol Messenger - Регистрация</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0e1621; color: white; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        #auth, #chat { background: #17212b; width: 100%; max-width: 400px; height: 600px; display: flex; flex-direction: column; border-radius: 0; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        body { font-family: 'Segoe UI', sans-serif; background: #0e1621; color: white; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #17212b; width: 100%; max-width: 380px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
         .hidden { display: none !important; }
+        img.logo { width: 80px; margin-bottom: 20px; }
+        h2 { margin-bottom: 20px; color: #fff; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #242f3d; border-radius: 8px; background: #1f2936; color: white; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #50a2e3; }
+        button { width: 100%; padding: 12px; background: #50a2e3; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #3d8ec9; }
+        .error { color: #ff595a; font-size: 14px; margin-top: 5px; }
         
-        /* Шапка */
-        .header { background: #242f3d; padding: 15px; display: flex; align-items: center; font-weight: bold; font-size: 18px; border-bottom: 1px solid #0e1621; }
-        
-        /* Окно входа */
-        .auth-content { padding: 40px 20px; text-align: center; flex: 1; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #242f3d; border-radius: 8px; background: #1f2936; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #50a2e3; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        /* Сообщения */
-        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; }
-        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 12px; max-width: 75%; font-size: 14px; position: relative; line-height: 1.4; }
-        .my-msg { align-self: flex-end; background: #2b5278; border-bottom-right-radius: 2px; }
-        .friend-msg { align-self: flex-start; background: #182533; border-bottom-left-radius: 2px; }
-        
-        /* Поле ввода */
-        .input-area { background: #17212b; padding: 10px; display: flex; gap: 10px; }
-        .input-area input { margin: 0; border-radius: 20px; padding: 10px 15px; }
-        .input-area button { width: auto; margin: 0; border-radius: 50%; width: 40px; height: 40px; padding: 0; }
+        /* Чат */
+        #chat-window { width: 100%; max-width: 450px; height: 90vh; background: #17212b; display: flex; flex-direction: column; }
+        .header { background: #242f3d; padding: 15px; font-weight: bold; text-align: left; }
+        #messages { flex: 1; overflow-y: auto; padding: 15px; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; }
+        .msg { margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; max-width: 75%; font-size: 14px; line-height: 1.4; }
+        .my-msg { align-self: flex-end; background: #2b5278; }
+        .friend-msg { align-self: flex-start; background: #182533; }
     </style>
 </head>
 <body>
 
-    <div id="auth">
-        <div class="header">Abol Messenger</div>
-        <div class="auth-content">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="80" style="margin-bottom: 20px;">
-            <input type="text" id="username" placeholder="Ваш юзернейм">
-            <input type="text" id="friendName" placeholder="Кому хотите написать?">
-            <button onclick="login()">НАЧАТЬ ОБЩЕНИЕ</button>
-        </div>
+    <div id="auth-container" class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="logo">
+        <h2 id="auth-title">Создать аккаунт</h2>
+        <input type="text" id="reg-username" placeholder="Придумайте юзернейм">
+        <div id="error-msg" class="error"></div>
+        <button onclick="register()">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+        <p style="font-size: 14px; color: #888; margin-top: 15px; cursor: pointer;" onclick="toggleAuth()">Уже есть аккаунт? Войти</p>
     </div>
 
-    <div id="chat" class="hidden">
-        <div class="header" id="chatWith">Чат</div>
+    <div id="login-container" class="container hidden">
+        <h2 id="user-welcome">Привет!</h2>
+        <input type="text" id="friend-username" placeholder="Юзернейм друга">
+        <button onclick="startChat()">НАЧАТЬ ЧАТ</button>
+    </div>
+
+    <div id="chat-window" class="hidden">
+        <div class="header" id="chat-header">Чат</div>
         <div id="messages"></div>
-        <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Написать сообщение...">
-            <button onclick="sendMessage()">➤</button>
+        <div style="padding: 10px; display: flex; gap: 10px;">
+            <input type="text" id="msg-input" placeholder="Сообщение..." style="margin: 0;">
+            <button onclick="send()" style="width: 60px; margin: 0;">➤</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Твои ключи Firebase (Дамир, они уже вставлены!)
         const firebaseConfig = {
             apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
             authDomain: "kaka-chat-39bb6.firebaseapp.com",
@@ -66,61 +66,78 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let currentUser = "";
+        let myNick = "";
         let chatID = "";
 
-        window.login = () => {
-            const name = document.getElementById('username').value.trim().toLowerCase();
-            const friend = document.getElementById('friendName').value.trim().toLowerCase();
-            
-            if (name && friend) {
-                currentUser = name;
-                chatID = [name, friend].sort().join("_");
-                document.getElementById('chatWith').innerText = friend;
-                document.getElementById('auth').classList.add('hidden');
-                document.getElementById('chat').classList.remove('hidden');
+        // ФУНКЦИЯ РЕГИСТРАЦИИ
+        window.register = async () => {
+            const input = document.getElementById('reg-username');
+            const nick = input.value.trim().toLowerCase();
+            const error = document.getElementById('error-msg');
+
+            if (nick.length < 3) {
+                error.innerText = "Минимум 3 символа!";
+                return;
+            }
+
+            // Проверяем, свободен ли ник
+            const q = query(collection(db, "users"), where("username", "==", nick));
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                // Если ник найден, просто логинимся под ним
+                loginSuccess(nick);
+            } else {
+                // Если ника нет, создаем нового пользователя
+                await addDoc(collection(db, "users"), { username: nick, createdAt: serverTimestamp() });
+                loginSuccess(nick);
+            }
+        };
+
+        function loginSuccess(nick) {
+            myNick = nick;
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('user-welcome').innerText = "Привет, " + nick + "!";
+        }
+
+        window.startChat = () => {
+            const friend = document.getElementById('friend-username').value.trim().toLowerCase();
+            if (friend) {
+                chatID = [myNick, friend].sort().join("_");
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('chat-window').classList.remove('hidden');
+                document.getElementById('chat-header').innerText = "Чат с " + friend;
                 loadMessages();
             }
         };
 
-        window.sendMessage = async () => {
-            const textInput = document.getElementById('messageInput');
-            const text = textInput.value;
-            if (text) {
+        window.send = async () => {
+            const input = document.getElementById('msg-input');
+            if (input.value) {
                 await addDoc(collection(db, "messages"), {
-                    user: currentUser,
+                    user: myNick,
                     room: chatID,
-                    text: text,
+                    text: input.value,
                     createdAt: serverTimestamp()
                 });
-                textInput.value = "";
+                input.value = "";
             }
         };
 
         function loadMessages() {
-            const q = query(
-                collection(db, "messages"), 
-                where("room", "==", chatID),
-                orderBy("createdAt", "asc")
-            );
-
+            const q = query(collection(db, "messages"), where("room", "==", chatID), orderBy("createdAt", "asc"));
             onSnapshot(q, (snapshot) => {
-                const msgDiv = document.getElementById('messages');
-                msgDiv.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const isMy = data.user === currentUser;
-                    const cssClass = isMy ? "my-msg" : "friend-msg";
-                    msgDiv.innerHTML += `<div class="msg ${cssClass}">${data.text}</div>`;
+                const box = document.getElementById('messages');
+                box.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    const cls = d.user === myNick ? "my-msg" : "friend-msg";
+                    box.innerHTML += `<div class="msg ${cls}">${d.text}</div>`;
                 });
-                msgDiv.scrollTop = msgDiv.scrollHeight;
+                box.scrollTop = box.scrollHeight;
             });
         }
-        
-        // Отправка по Enter
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
     </script>
 </body>
 </html>
