@@ -3,68 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Messenger Pro</title>
+    <title>Abol Messenger - Fixed</title>
     <style>
-        :root { --bg: #0e1621; --panel: #17212b; --blue: #2481cc; --text: #ffffff; --msg-my: #2b5278; --msg-friend: #182533; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .app { background: var(--panel); width: 100%; max-width: 450px; height: 100vh; display: flex; flex-direction: column; position: relative; }
-        .hidden { display: none !important; }
-        
-        /* Авторизация */
-        .auth { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
-        .auth h1 { color: var(--blue); margin-bottom: 30px; }
-        input { width: 100%; background: #242f3d; border: 1px solid #0e1621; color: white; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
-        .btn { width: 100%; background: var(--blue); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 16px; }
-
-        /* Шапка чата */
-        .header { background: #242f3d; padding: 10px 15px; display: flex; align-items: center; gap: 15px; height: 50px; }
-        .back { cursor: pointer; font-size: 24px; color: var(--blue); }
-        .status { font-size: 13px; color: #888; }
-
-        /* Чат */
-        #messages { flex: 1; overflow-y: auto; padding: 15px; background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-attachment: fixed; display: flex; flex-direction: column; gap: 8px; }
-        .msg { padding: 8px 14px; border-radius: 16px; max-width: 75%; font-size: 15px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .my { align-self: flex-end; background: var(--msg-my); border-bottom-right-radius: 4px; }
-        .friend { align-self: flex-start; background: var(--msg-friend); border-bottom-left-radius: 4px; }
-        .time { font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px; }
-        
-        /* Ввод */
-        .input-bar { padding: 10px 15px; background: var(--panel); display: flex; gap: 10px; align-items: center; border-top: 1px solid #0e1621; }
-        .input-bar input { margin: 0; border-radius: 25px; padding: 10px 20px; background: #242f3d; }
-        .send-btn { background: var(--blue); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; font-size: 18px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0e1621; color: white; margin: 0; display: flex; justify-content: center; height: 100vh; }
+        #chat { background: #17212b; width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; border: 1px solid #242f3d; }
+        .header { background: #242f3d; padding: 15px; text-align: center; font-weight: bold; }
+        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #0e1621; }
+        .msg { margin: 5px 0; padding: 10px 14px; border-radius: 12px; max-width: 80%; word-wrap: break-word; }
+        .my-msg { align-self: flex-end; background: #2b5278; border-bottom-right-radius: 2px; }
+        .other-msg { align-self: flex-start; background: #182533; border-bottom-left-radius: 2px; }
+        .system-msg { align-self: center; background: rgba(255, 255, 255, 0.05); font-size: 11px; color: #777; border-radius: 4px; padding: 5px 15px; margin: 8px 0; text-align: center; }
+        .user-label { font-size: 11px; color: #50a2e3; font-weight: bold; display: block; margin-bottom: 4px; }
+        .input-box { padding: 15px; display: flex; background: #17212b; border-top: 1px solid #242f3d; }
+        input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; background: #1f2936; color: white; outline: none; }
+        button { margin-left: 8px; width: 45px; height: 45px; background: #50a2e3; border: none; color: white; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <div id="screen-auth" class="auth">
-        <h1>Abol Messenger</h1>
-        <input type="text" id="in-my-nick" placeholder="Твой ник (например, damirka)">
-        <input type="text" id="in-friend-nick" placeholder="Кому будем писать?">
-        <button class="btn" onclick="initChat()">ВОЙТИ</button>
-    </div>
-
-    <div id="screen-chat" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
-        <div class="header">
-            <span class="back" onclick="location.reload()">‹</span>
-            <div>
-                <div id="target-name" style="font-weight: 600;">Чат</div>
-                <div class="status">в сети</div>
-            </div>
-        </div>
-        <div id="messages"></div>
-        <div class="input-bar">
-            <input type="text" id="msg-field" placeholder="Сообщение...">
-            <button class="send-btn" onclick="handleSend()">➤</button>
-        </div>
+<div id="chat">
+    <div class="header">Abol Messenger v1.3</div>
+    <div id="messages"></div>
+    <div class="input-box">
+        <input type="text" id="msgInput" placeholder="Сообщение или /help...">
+        <button onclick="handleSend()">➤</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Твои ключи из Firebase (уже встроены)
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
         authDomain: "kaka-chat-39bb6.firebaseapp.com",
@@ -76,70 +45,69 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let myName = "";
-    let room = "";
+    let myNick = localStorage.getItem('chatNick') || "дамирка";
+    const box = document.getElementById('messages');
 
-    window.initChat = () => {
-        const me = document.getElementById('in-my-nick').value.trim().toLowerCase();
-        const friend = document.getElementById('in-friend-nick').value.trim().toLowerCase();
-        
-        if (me && friend) {
-            myName = me;
-            room = [me, friend].sort().join("_");
-            document.getElementById('target-name').innerText = friend;
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('screen-chat').classList.remove('hidden');
-            startListening();
-        }
-    };
-
-    window.handleSend = async () => {
-        const field = document.getElementById('msg-field');
-        const text = field.value.trim();
-        if (!text) return;
-
-        // Команды
-        if (text.startsWith('/')) {
-            if (text === '/clear') document.getElementById('messages').innerHTML = "";
-            else if (text === '/about') alert("Abol Messenger Pro v2.1\nРазработчик: Дамир Шакуров");
-            field.value = ""; return;
-        }
-
-        await addDoc(collection(db, "messages"), {
-            user: myName,
-            room: room,
-            text: text,
-            time: serverTimestamp()
-        });
-        field.value = "";
-    };
-
-    function startListening() {
-        const q = query(
-            collection(db, "messages"),
-            where("room", "==", room),
-            orderBy("time", "asc"),
-            limitToLast(40)
-        );
-
-        onSnapshot(q, (snap) => {
-            const box = document.getElementById('messages');
-            box.innerHTML = "";
-            snap.forEach(doc => {
-                const data = doc.data();
-                if (!data.text) return;
-                
-                const isMy = data.user === myName;
-                const div = document.createElement('div');
-                div.className = 'msg ' + (isMy ? 'my' : 'friend');
-                div.innerHTML = `<div>${data.text}</div><div class="time">${isMy ? '✓✓' : ''}</div>`;
-                box.appendChild(div);
-            });
-            box.scrollTop = box.scrollHeight;
-        });
+    function addSys(txt) {
+        const d = document.createElement('div');
+        d.className = 'system-msg';
+        d.innerText = txt;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
     }
 
-    document.getElementById('msg-field').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
+    window.handleSend = async () => {
+        const input = document.getElementById('msgInput');
+        const val = input.value.trim();
+        if (!val) return;
+
+        // ОБРАБОТКА КОМАНД
+        if (val.startsWith('/')) {
+            const p = val.split(' ');
+            const cmd = p[0].toLowerCase();
+            if (cmd === '/clear') { box.innerHTML = ""; addSys("Очищено"); }
+            else if (cmd === '/nick' && p[1]) { myNick = p[1]; localStorage.setItem('chatNick', myNick); addSys("Ник изменен на " + myNick); }
+            else if (cmd === '/help') { addSys("Команды: /clear, /nick ИМЯ, /about"); }
+            else if (cmd === '/about') { addSys("Abol Messenger для " + myNick); }
+            else { addSys("Неизвестная команда"); }
+            input.value = ""; return;
+        }
+
+        // ОТПРАВКА
+        try {
+            await addDoc(collection(db, "messages"), {
+                user: myNick,
+                text: val,
+                createdAt: serverTimestamp()
+            });
+            input.value = "";
+        } catch (e) { addSys("Ошибка отправки!"); }
+    };
+
+    // ГЛАВНОЕ: ПОЛУЧЕНИЕ СООБЩЕНИЙ (ИСПРАВЛЕНО)
+    // Берем последние 50 сообщений, чтобы не перегружать телефон
+    const q = query(collection(db, "messages"), orderBy("createdAt", "asc"), limitToLast(50));
+    
+    onSnapshot(q, (snapshot) => {
+        box.innerHTML = ""; // Перерисовываем всё окно, чтобы данные не двоились
+        snapshot.forEach((doc) => {
+            const d = doc.data();
+            if (!d.text) return;
+
+            const isMy = d.user === myNick;
+            const item = document.createElement('div');
+            item.className = 'msg ' + (isMy ? 'my-msg' : 'other-msg');
+            item.innerHTML = `<span class="user-label">${d.user}</span>${d.text}`;
+            box.appendChild(item);
+        });
+        box.scrollTop = box.scrollHeight;
+    }, (err) => {
+        addSys("Ошибка базы! Проверь интернет.");
+    });
+
+    document.getElementById('msgInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
+    addSys("Abol Messenger готов!");
 </script>
+
 </body>
 </html>
