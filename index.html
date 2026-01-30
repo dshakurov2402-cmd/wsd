@@ -5,101 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abol Messenger</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #auth, #chat { background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 320px; }
-        .hidden { display: none; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; box-sizing: border-box; background: #333; color: white; }
-        button { width: 100%; padding: 10px; background: #007bff; border: none; color: white; border-radius: 5px; cursor: pointer; }
-        #messages { height: 300px; overflow-y: auto; border: 1px solid #333; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; background: #181818; }
-        .msg { margin-bottom: 8px; font-size: 14px; padding: 8px; border-radius: 8px; background: #252525; max-width: 80%; }
-        .my-msg { align-self: flex-end; background: #007bff; }
-        .msg b { display: block; font-size: 10px; margin-bottom: 3px; opacity: 0.8; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #e6ebee; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+        .app-container { width: 1000px; height: 90vh; background: white; display: flex; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+
+        /* Боковая панель */
+        .sidebar { width: 30%; border-right: 1px solid #ddd; display: flex; flex-direction: column; background: #fff; }
+        .search-container { padding: 20px; background: #fff; }
+        .search-container input { width: 100%; padding: 10px; border: 1px solid #dfe1e5; border-radius: 20px; outline: none; background: #f1f3f4; }
+        
+        .contact-list { flex: 1; overflow-y: auto; }
+        .contact { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f5f5f5; transition: 0.3s; display: flex; align-items: center; }
+        .contact:hover { background: #f0f7ff; }
+        .contact .avatar { width: 45px; height: 45px; background: #0088cc; border-radius: 50%; margin-right: 15px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Окно чата */
+        .chat-window { width: 70%; display: flex; flex-direction: column; background: #f5f5f5; position: relative; }
+        .chat-header { padding: 15px 25px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; font-size: 1.1em; }
+        
+        #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-image: url('https://www.toptal.com/designers/subtlepatterns/uploads/double-bubble-outline.png'); }
+        .msg { max-width: 60%; padding: 10px 15px; border-radius: 15px; font-size: 0.95em; line-height: 1.4; position: relative; }
+        .msg.sent { align-self: flex-end; background: #effdde; border-bottom-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .msg.received { align-self: flex-start; background: white; border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+        .input-area { padding: 15px; background: white; display: flex; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
+        .input-area button { padding: 0 20px; background: #0088cc; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .input-area button:hover { background: #0077b3; }
+        
+        .empty-chat { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888; }
     </style>
 </head>
 <body>
 
-    <div id="auth">
-        <h2>Abol Chat</h2>
-        <input type="text" id="username" placeholder="Твой ник (например, дамирка)">
-        <input type="text" id="friendName" placeholder="Ник друга (для связи)">
-        <p style="font-size: 12px; color: #888;">Чтобы общаться, введите ники друг друга.</p>
-        <button onclick="login()">Начать чат</button>
+<div class="app-container">
+    <div class="sidebar">
+        <div class="search-container">
+            <input type="text" id="userSearch" placeholder="Поиск по username..." onkeyup="searchUser()">
+        </div>
+        <div class="contact-list" id="contactList">
+            </div>
     </div>
 
-    <div id="chat" class="hidden">
-        <div id="messages"></div>
-        <input type="text" id="messageInput" placeholder="Сообщение...">
-        <button onclick="sendMessage()">Отправить</button>
+    <div class="chat-window" id="chatWindow">
+        <div class="empty-chat" id="noChat">
+            <p>Выберите, кому написать, через поиск</p>
+        </div>
+        <div id="chatActive" style="display: none; height: 100%; flex-direction: column;">
+            <div class="chat-header" id="currentChatUser">Username</div>
+            <div id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="msgInput" placeholder="Напишите сообщение...">
+                <button onclick="sendMessage()">ОТПРАВИТЬ</button>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script>
+    // Имитация базы данных пользователей
+    const users = [
+        { username: "@tester", name: "Тестировщик" },
+        { username: "@admin", name: "Администратор" },
+        { username: "@dshakurov", name: "Дамир" },
+        { username: "@friend", name: "Друг" }
+    ];
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
-            authDomain: "kaka-chat-39bb6.firebaseapp.com",
-            projectId: "kaka-chat-39bb6",
-            storageBucket: "kaka-chat-39bb6.firebasestorage.app",
-            messagingSenderId: "927391255601",
-            appId: "1:927391255601:web:1f83128108dc1ca2831910"
-        };
+    let activeUser = null;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let currentUser = "";
-        let chatID = "";
+    function searchUser() {
+        const input = document.getElementById('userSearch').value.toLowerCase();
+        const list = document.getElementById('contactList');
+        list.innerHTML = "";
 
-        window.login = () => {
-            const name = document.getElementById('username').value.trim();
-            const friend = document.getElementById('friendName').value.trim();
-            
-            if (name && friend) {
-                currentUser = name;
-                // Создаем уникальный ID комнаты из двух имен (сортируем, чтобы у обоих был один ID)
-                chatID = [name, friend].sort().join("_");
-                
-                document.getElementById('auth').classList.add('hidden');
-                document.getElementById('chat').classList.remove('hidden');
-                loadMessages();
-            } else {
-                alert("Заполни оба поля!");
-            }
-        };
-
-        window.sendMessage = async () => {
-            const textInput = document.getElementById('messageInput');
-            const text = textInput.value;
-            if (text) {
-                await addDoc(collection(db, "messages"), {
-                    user: currentUser,
-                    room: chatID,
-                    text: text,
-                    createdAt: serverTimestamp()
-                });
-                textInput.value = "";
-            }
-        };
-
-        function loadMessages() {
-            // Фильтруем сообщения только для вашей комнаты
-            const q = query(
-                collection(db, "messages"), 
-                where("room", "==", chatID),
-                orderBy("createdAt", "asc")
-            );
-
-            onSnapshot(q, (snapshot) => {
-                const msgDiv = document.getElementById('messages');
-                msgDiv.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const isMy = data.user === currentUser ? "my-msg" : "";
-                    msgDiv.innerHTML += `<div class="msg ${isMy}"><b>${data.user}</b>${data.text}</div>`;
-                });
-                msgDiv.scrollTop = msgDiv.scrollHeight;
+        if (input.length > 0) {
+            const filtered = users.filter(u => u.username.toLowerCase().includes(input));
+            filtered.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'contact';
+                div.innerHTML = `<div class="avatar">${user.username[1].toUpperCase()}</div> <div><strong>${user.name}</strong><br><small>${user.username}</small></div>`;
+                div.onclick = () => openChat(user);
+                list.appendChild(div);
             });
         }
-    </script>
+    }
+
+    function openChat(user) {
+        activeUser = user;
+        document.getElementById('noChat').style.display = 'none';
+        document.getElementById('chatActive').style.display = 'flex';
+        document.getElementById('currentChatUser').innerText = user.name + " (" + user.username + ")";
+        document.getElementById('messages').innerHTML = ""; // Очистка старых сообщений
+        
+        // Приветственное сообщение от "бота"
+        addMessage(`Привет! Ты нашел меня по юзернейму ${user.username}.`, 'received');
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const text = input.value.trim();
+        if (text !== "" && activeUser) {
+            addMessage(text, 'sent');
+            input.value = "";
+            
+            // Маленькая авто-ответка для имитации переписки
+            setTimeout(() => {
+                addMessage("Сообщение доставлено на сервер (имитация)", "received");
+            }, 1000);
+        }
+    }
+
+    function addMessage(text, type) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${type}`;
+        msgDiv.innerText = text;
+        const container = document.getElementById('messages');
+        container.appendChild(msgDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Отправка по нажатию Enter
+    document.getElementById('msgInput').addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+</script>
+
 </body>
 </html>
