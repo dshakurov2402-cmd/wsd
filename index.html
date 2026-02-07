@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Network - WORKING</title>
+    <title>Abol Network v3.0</title>
     <style>
-        :root { --primary: #1d9bf0; --bg: #000; --surface: #16181c; --text: #e7e9ea; --border: #2f3336; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        :root { --primary: #1d9bf0; --bg: #000; --surface: #16181c; --text: #e7e9ea; --border: #2f3336; --red: #f4212e; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         
-        /* Авторизация */
-        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        /* Вход */
+        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; }
         .card { background: var(--surface); padding: 30px; border-radius: 16px; width: 320px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Главный экран */
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn:hover { opacity: 0.8; }
+
+        /* Главная */
         #main-app { max-width: 600px; margin: 0 auto; border-inline: 1px solid var(--border); min-height: 100vh; display: none; }
         header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.9); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 24px; cursor: pointer; }
         
         /* Посты */
-        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
         .avatar { width: 48px; height: 48px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); flex-shrink: 0; }
-        .post-body { flex: 1; }
-        .p-user { font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
-        .p-text { line-height: 1.4; word-break: break-word; }
+        .post-img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
+        .p-user { font-weight: bold; margin-bottom: 4px; color: #fff; }
 
         /* Админка */
-        #admin-panel { display: none; position: fixed; inset: 0; background: #050505; z-index: 3000; padding: 20px; overflow-y: auto; }
-        .admin-item { background: #1c1c1c; padding: 12px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .del-btn { background: #f4212e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        #admin-panel { display: none; position: fixed; inset: 0; background: #050505; z-index: 4000; padding: 20px; overflow-y: auto; }
+        .stat-box { display: flex; gap: 20px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); padding: 15px; border-radius: 12px; flex: 1; text-align: center; border: 1px solid var(--border); }
+        .admin-item { background: #1c1c1c; padding: 12px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .badge-admin { background: var(--red); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -38,31 +38,41 @@
 <div id="auth-screen">
     <div class="card">
         <h1 style="color:var(--primary)">Abol</h1>
-        <input type="text" id="user-login" placeholder="Придумайте логин">
-        <input type="password" id="user-pass" placeholder="Придумайте пароль">
+        <input type="text" id="user-login" placeholder="Логин">
+        <input type="password" id="user-pass" placeholder="Пароль">
         <button class="btn" onclick="authAction('login')">Войти</button>
-        <button class="btn" style="background:#222" onclick="authAction('reg')">Регистрация</button>
+        <button class="btn" style="background:#222; margin-top:10px" onclick="authAction('reg')">Регистрация</button>
     </div>
 </div>
 
 <div id="admin-panel">
     <div style="display:flex; justify-content:space-between; align-items:center">
-        <h2>Админ-центр Damir</h2>
-        <button class="btn" style="width:100px; background:#333" onclick="closeAdmin()">Закрыть</button>
+        <h2>Панель Управления Abol</h2>
+        <button class="btn" style="width:100px; background:#333" onclick="closeAdmin()">Выход</button>
     </div>
-    <div id="admin-content"></div>
+    
+    <div class="stat-box">
+        <div class="stat-card"><small>Онлайн</small><h2 id="online-count">1</h2></div>
+        <div class="stat-card"><small>Рекорд</small><h2 id="max-online">1</h2></div>
+    </div>
+
+    <h3>Пользователи (Бан-лист)</h3>
+    <div id="user-admin-list"></div>
+    <h3>Посты</h3>
+    <div id="post-admin-list"></div>
 </div>
 
 <div id="main-app">
     <header>
-        <span class="logo" onclick="openAdmin()">🅰️</span>
-        <b id="display-name">Лента</b>
+        <span onclick="openAdmin()" style="font-size:24px; cursor:pointer">🅰️</span>
+        <b id="display-name">@user</b>
         <button onclick="location.reload()" style="background:none; border:none; color:gray; cursor:pointer">Выйти</button>
     </header>
 
     <div style="padding:15px; border-bottom:8px solid #202327">
-        <textarea id="tweet-text" placeholder="Что происходит?" style="width:100%; background:none; border:none; color:#fff; font-size:19px; outline:none; resize:none" rows="3"></textarea>
-        <div style="display:flex; justify-content:flex-end">
+        <textarea id="tweet-text" placeholder="Что нового?" rows="3" style="border:none; font-size:19px"></textarea>
+        <input type="text" id="tweet-img" placeholder="Ссылка на фото (необязательно)">
+        <div style="display:flex; justify-content:flex-end; margin-top:10px">
             <button class="btn" style="width:120px" onclick="sendTweet()">Твитнуть</button>
         </div>
     </div>
@@ -72,7 +82,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, where, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
@@ -86,22 +96,29 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     let myUser = null;
-    let isAdmin = false;
 
-    // КАСТОМНАЯ АВТОРИЗАЦИЯ
+    // СТАТИСТИКА ОНЛАЙН
+    function updateOnline() {
+        const ref = doc(db, "stats", "online");
+        onSnapshot(ref, (d) => {
+            if(d.exists()) {
+                document.getElementById('online-count').innerText = d.data().current;
+                document.getElementById('max-online').innerText = d.data().max;
+            }
+        });
+    }
+
     window.authAction = async (mode) => {
         const user = document.getElementById('user-login').value.trim().toLowerCase();
         const pass = document.getElementById('user-pass').value.trim();
         if(!user || !pass) return alert("Заполни поля!");
 
-        const userRef = collection(db, "users");
-        const q = query(userRef, where("login", "==", user));
-        const snap = await getDocs(q);
+        const snap = await getDocs(query(collection(db, "users"), where("login", "==", user)));
 
         if (mode === 'reg') {
             if(!snap.empty) return alert("Логин занят!");
-            await addDoc(userRef, { login: user, pass: pass, at: serverTimestamp() });
-            alert("Регистрация успешна! Теперь жми Войти.");
+            await addDoc(collection(db, "users"), { login: user, pass: pass });
+            alert("Готово! Жми Войти.");
         } else {
             let found = false;
             snap.forEach(d => { if(d.data().pass === pass) found = true; });
@@ -110,36 +127,39 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
                 document.getElementById('display-name').innerText = "@" + user;
-                loadTweets();
-            } else { alert("Неверный логин или пароль!"); }
+                loadFeed();
+                updateOnline();
+            } else alert("Ошибка!");
         }
     };
 
-    // ПОСТИНГ
     window.sendTweet = async () => {
-        const val = document.getElementById('tweet-text').value.trim();
-        if(!val) return;
+        const text = document.getElementById('tweet-text').value.trim();
+        const img = document.getElementById('tweet-img').value.trim();
+        if(!text && !img) return;
         await addDoc(collection(db, "posts"), {
             user: myUser,
-            text: val,
+            text: text,
+            img: img,
             at: serverTimestamp()
         });
         document.getElementById('tweet-text').value = "";
+        document.getElementById('tweet-img').value = "";
     };
 
-    function loadTweets() {
-        const q = query(collection(db, "posts"), orderBy("at", "desc"));
-        onSnapshot(q, (snap) => {
+    function loadFeed() {
+        onSnapshot(query(collection(db, "posts"), orderBy("at", "desc")), (snap) => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
-            snap.forEach(doc => {
-                const p = doc.data();
+            snap.forEach(d => {
+                const p = d.data();
                 feed.innerHTML += `
                     <div class="post">
                         <div class="avatar">${p.user[0].toUpperCase()}</div>
                         <div class="post-body">
                             <div class="p-user">@${p.user}</div>
                             <div class="p-text">${p.text}</div>
+                            ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
                         </div>
                     </div>`;
             });
@@ -147,36 +167,36 @@
     }
 
     // АДМИНКА
-    window.openAdmin = () => {
-        const p = prompt("PASSWORD ADMIN:");
-        if (p === "3232damir4ik") {
-            isAdmin = true;
+    window.openAdmin = async () => {
+        const p = prompt("PASSWORD:");
+        if(p === "3232damir4ik") {
             document.getElementById('admin-panel').style.display = 'block';
             refreshAdmin();
         }
     };
 
     async function refreshAdmin() {
-        const cont = document.getElementById('admin-content');
-        cont.innerHTML = "<h3>Управление контентом:</h3>";
-        const q = await getDocs(collection(db, "posts"));
-        q.forEach(d => {
-            cont.innerHTML += `
-                <div class="admin-item">
-                    <span><b>${d.data().user}</b>: ${d.data().text.substring(0,30)}...</span>
-                    <button class="del-btn" onclick="killPost('${d.id}')">Удалить</button>
-                </div>`;
+        const uList = document.getElementById('user-admin-list');
+        const pList = document.getElementById('post-admin-list');
+        uList.innerHTML = ""; pList.innerHTML = "";
+
+        const uSnap = await getDocs(collection(db, "users"));
+        uSnap.forEach(d => {
+            uList.innerHTML += `<div class="admin-item"><span>@${d.data().login}</span>
+                <button class="btn" style="width:80px; background:var(--red)" onclick="banUser('${d.id}')">БАН</button></div>`;
+        });
+
+        const pSnap = await getDocs(collection(db, "posts"));
+        pSnap.forEach(d => {
+            pList.innerHTML += `<div class="admin-item"><span>${d.data().user}: ${d.data().text.substring(0,20)}</span>
+                <button class="btn" style="width:80px; background:#444" onclick="delPost('${d.id}')">Удалить</button></div>`;
         });
     }
 
-    window.killPost = async (id) => {
-        await deleteDoc(doc(db, "posts", id));
-        refreshAdmin();
-    };
-
-    window.closeAdmin = () => {
-        document.getElementById('admin-panel').style.display = 'none';
-    };
+    window.banUser = async (id) => { if(confirm("ЗАБАНЬКАЕМ?")) { await deleteDoc(doc(db, "users", id)); refreshAdmin(); } };
+    window.delPost = async (id) => { await deleteDoc(doc(db, "posts", id)); refreshAdmin(); };
+    window.closeAdmin = () => document.getElementById('admin-panel').style.display = 'none';
 </script>
+
 </body>
 </html>
