@@ -3,64 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Network PRO</title>
+    <title>Abol Network - WORKING</title>
     <style>
         :root { --primary: #1d9bf0; --bg: #000; --surface: #16181c; --text: #e7e9ea; --border: #2f3336; }
-        body { font-family: Segoe UI, Roboto; background: var(--bg); color: var(--text); margin: 0; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
         
-        /* Стили входа */
-        #auth-screen, #admin-panel { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card { background: var(--surface); padding: 30px; border-radius: 16px; width: 320px; box-shadow: 0 0 20px rgba(29, 155, 240, 0.2); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        /* Авторизация */
+        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .card { background: var(--surface); padding: 30px; border-radius: 16px; width: 320px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        /* Лента */
+        /* Главный экран */
         #main-app { max-width: 600px; margin: 0 auto; border-inline: 1px solid var(--border); min-height: 100vh; display: none; }
-        header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; sticky; top: 0; background: rgba(0,0,0,0.8); }
-        .logo { font-size: 24px; cursor: pointer; user-select: none; }
+        header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.9); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; cursor: pointer; }
         
-        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
-        .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        /* Посты */
+        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        .avatar { width: 48px; height: 48px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); flex-shrink: 0; }
         .post-body { flex: 1; }
-        .p-user { font-weight: bold; font-size: 15px; }
-        .p-text { margin-top: 5px; line-height: 1.4; }
+        .p-user { font-weight: bold; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+        .p-text { line-height: 1.4; word-break: break-word; }
 
         /* Админка */
-        #admin-panel { display: none; background: #050505; }
-        .admin-list { width: 90%; max-width: 500px; overflow-y: auto; }
-        .admin-item { background: #1c1c1c; padding: 10px; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between; }
-        .del-btn { background: #f4212e; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        #admin-panel { display: none; position: fixed; inset: 0; background: #050505; z-index: 3000; padding: 20px; overflow-y: auto; }
+        .admin-item { background: #1c1c1c; padding: 12px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .del-btn { background: #f4212e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
     <div class="card">
-        <h2 style="text-align:center">Abol Login</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="pass" placeholder="Пароль">
-        <button class="btn" onclick="handleAuth('login')">Войти</button>
-        <p style="text-align:center; font-size:12px; color:gray; cursor:pointer" onclick="handleAuth('reg')">Нет аккаунта? Регистрация</p>
+        <h1 style="color:var(--primary)">Abol</h1>
+        <input type="text" id="user-login" placeholder="Придумайте логин">
+        <input type="password" id="user-pass" placeholder="Придумайте пароль">
+        <button class="btn" onclick="authAction('login')">Войти</button>
+        <button class="btn" style="background:#222" onclick="authAction('reg')">Регистрация</button>
     </div>
 </div>
 
 <div id="admin-panel">
-    <h2>Админ-центр (Damir OS)</h2>
-    <div class="admin-list" id="userList"></div>
-    <button class="btn" style="width:200px; margin-top:20px; background:#333" onclick="closeAdmin()">Выйти из панели</button>
+    <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2>Админ-центр Damir</h2>
+        <button class="btn" style="width:100px; background:#333" onclick="closeAdmin()">Закрыть</button>
+    </div>
+    <div id="admin-content"></div>
 </div>
 
 <div id="main-app">
     <header>
-        <span class="logo" onclick="askAdmin()">🅰️</span>
-        <b>Abol Network</b>
-        <button onclick="logout()" style="background:none; border:none; color:gray; cursor:pointer">Выход</button>
+        <span class="logo" onclick="openAdmin()">🅰️</span>
+        <b id="display-name">Лента</b>
+        <button onclick="location.reload()" style="background:none; border:none; color:gray; cursor:pointer">Выйти</button>
     </header>
 
     <div style="padding:15px; border-bottom:8px solid #202327">
-        <textarea id="tweet" placeholder="Что нового?" style="width:100%; background:none; border:none; color:#fff; font-size:18px; outline:none; resize:none" rows="3"></textarea>
-        <button class="btn" style="width:100px; float:right" onclick="post()">Постить</button>
-        <div style="clear:both"></div>
+        <textarea id="tweet-text" placeholder="Что происходит?" style="width:100%; background:none; border:none; color:#fff; font-size:19px; outline:none; resize:none" rows="3"></textarea>
+        <div style="display:flex; justify-content:flex-end">
+            <button class="btn" style="width:120px" onclick="sendTweet()">Твитнуть</button>
+        </div>
     </div>
 
     <div id="feed"></div>
@@ -68,8 +72,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
@@ -81,57 +84,61 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
+    let myUser = null;
+    let isAdmin = false;
 
-    // ВЕРИФИКАЦИЯ
-    window.handleAuth = async (type) => {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('pass').value;
-        try {
-            if(type === 'reg') await createUserWithEmailAndPassword(auth, email, pass);
-            else await signInWithEmailAndPassword(auth, email, pass);
-        } catch (e) { alert("Ошибка: " + e.message); }
+    // КАСТОМНАЯ АВТОРИЗАЦИЯ
+    window.authAction = async (mode) => {
+        const user = document.getElementById('user-login').value.trim().toLowerCase();
+        const pass = document.getElementById('user-pass').value.trim();
+        if(!user || !pass) return alert("Заполни поля!");
+
+        const userRef = collection(db, "users");
+        const q = query(userRef, where("login", "==", user));
+        const snap = await getDocs(q);
+
+        if (mode === 'reg') {
+            if(!snap.empty) return alert("Логин занят!");
+            await addDoc(userRef, { login: user, pass: pass, at: serverTimestamp() });
+            alert("Регистрация успешна! Теперь жми Войти.");
+        } else {
+            let found = false;
+            snap.forEach(d => { if(d.data().pass === pass) found = true; });
+            if(found) {
+                myUser = user;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                document.getElementById('display-name').innerText = "@" + user;
+                loadTweets();
+            } else { alert("Неверный логин или пароль!"); }
+        }
     };
 
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-            loadFeed();
-        } else {
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('main-app').style.display = 'none';
-        }
-    });
-
-    window.logout = () => signOut(auth);
-
-    // ПОСТЫ
-    window.post = async () => {
-        const txt = document.getElementById('tweet').value;
-        if(!txt) return;
+    // ПОСТИНГ
+    window.sendTweet = async () => {
+        const val = document.getElementById('tweet-text').value.trim();
+        if(!val) return;
         await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid,
-            email: auth.currentUser.email,
-            text: txt,
+            user: myUser,
+            text: val,
             at: serverTimestamp()
         });
-        document.getElementById('tweet').value = "";
+        document.getElementById('tweet-text').value = "";
     };
 
-    function loadFeed() {
+    function loadTweets() {
         const q = query(collection(db, "posts"), orderBy("at", "desc"));
         onSnapshot(q, (snap) => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
-            snap.forEach(pDoc => {
-                const p = pDoc.data();
+            snap.forEach(doc => {
+                const p = doc.data();
                 feed.innerHTML += `
                     <div class="post">
-                        <div class="avatar">${p.email[0].toUpperCase()}</div>
+                        <div class="avatar">${p.user[0].toUpperCase()}</div>
                         <div class="post-body">
-                            <div class="p-user">${p.email}</div>
+                            <div class="p-user">@${p.user}</div>
                             <div class="p-text">${p.text}</div>
                         </div>
                     </div>`;
@@ -139,33 +146,32 @@
         });
     }
 
-    // АДМИН-ПАНЕЛЬ
-    window.askAdmin = () => {
-        const p = prompt("Введите пароль администратора:");
+    // АДМИНКА
+    window.openAdmin = () => {
+        const p = prompt("PASSWORD ADMIN:");
         if (p === "3232damir4ik") {
-            document.getElementById('admin-panel').style.display = 'flex';
-            loadAdminData();
-        } else {
-            alert("Доступ запрещен!");
+            isAdmin = true;
+            document.getElementById('admin-panel').style.display = 'block';
+            refreshAdmin();
         }
     };
 
-    async function loadAdminData() {
-        const list = document.getElementById('userList');
-        list.innerHTML = "<h3>Управление постами (Все посты):</h3>";
+    async function refreshAdmin() {
+        const cont = document.getElementById('admin-content');
+        cont.innerHTML = "<h3>Управление контентом:</h3>";
         const q = await getDocs(collection(db, "posts"));
         q.forEach(d => {
-            list.innerHTML += `
+            cont.innerHTML += `
                 <div class="admin-item">
-                    <span>${d.data().email}: ${d.data().text.substring(0,20)}...</span>
-                    <button class="del-btn" onclick="delPost('${d.id}')">Удалить</button>
+                    <span><b>${d.data().user}</b>: ${d.data().text.substring(0,30)}...</span>
+                    <button class="del-btn" onclick="killPost('${d.id}')">Удалить</button>
                 </div>`;
         });
     }
 
-    window.delPost = async (id) => {
+    window.killPost = async (id) => {
         await deleteDoc(doc(db, "posts", id));
-        loadAdminData();
+        refreshAdmin();
     };
 
     window.closeAdmin = () => {
