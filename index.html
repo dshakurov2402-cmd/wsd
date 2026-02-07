@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abol Network v4.5 - FIXED</title>
+    <title>Abol Network v5.0 - TOTAL FIX</title>
     <style>
         :root { --primary: #1d9bf0; --bg: #000; --surface: #16181c; --text: #e7e9ea; --border: #2f3336; --red: #f4212e; }
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
         
-        #app-container { width: 100%; max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; display: none; }
+        #app-container { width: 100%; max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; display: none; background: #000; }
         
         /* Вход */
         #auth-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--surface); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
+        .auth-card { background: var(--surface); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--border); }
         input, textarea { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 10px; font-size: 16px; outline: none; }
         .btn { background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
         
@@ -21,16 +21,16 @@
         .logo { font-size: 26px; cursor: pointer; }
 
         .tweet-box { padding: 15px; border-bottom: 8px solid #202327; }
-        .tweet-box textarea { background: none; border: none; font-size: 20px; resize: none; margin: 0; }
-        .tweet-box input { padding: 8px; font-size: 14px; border: 1px dashed var(--border); }
+        .tweet-box textarea { background: none; border: none; font-size: 20px; resize: none; margin: 0; min-height: 80px; }
+        .tweet-box input { padding: 8px; font-size: 14px; border: 1px dashed var(--border); margin-top: 10px; }
 
-        /* Посты */
-        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
-        .avatar { width: 48px; height: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; flex-shrink: 0; }
-        .post-body { flex: 1; }
-        .post-user { font-weight: bold; font-size: 15px; margin-bottom: 5px; color: #fff; }
-        .post-text { font-size: 15px; line-height: 1.5; white-space: pre-wrap; margin-bottom: 10px; }
-        .post-img { width: 100%; border-radius: 16px; border: 1px solid var(--border); max-height: 450px; object-fit: cover; margin-top: 5px; }
+        /* ИСПРАВЛЕННЫЕ ПОСТЫ */
+        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+        .avatar { width: 48px; height: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; flex-shrink: 0; font-size: 20px; }
+        .post-body { flex: 1; display: flex; flex-direction: column; }
+        .post-user { font-weight: bold; font-size: 15px; margin-bottom: 5px; color: #fff; display: block; }
+        .post-text { font-size: 15px; line-height: 1.5; white-space: pre-wrap; color: #e7e9ea; display: block; margin-bottom: 5px; }
+        .post-img { width: 100%; border-radius: 16px; border: 1px solid var(--border); max-height: 450px; object-fit: cover; margin-top: 10px; display: block; }
 
         #admin-screen { display: none; position: fixed; inset: 0; background: #000; z-index: 9000; padding: 20px; overflow-y: auto; }
         .admin-item { background: var(--surface); padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -40,7 +40,7 @@
 
 <div id="auth-screen">
     <div class="auth-card">
-        <h1 style="color:var(--primary);">Abol</h1>
+        <h1 style="color:var(--primary); margin-bottom:10px;">Abol</h1>
         <input type="text" id="login-id" placeholder="Никнейм">
         <input type="password" id="login-pw" placeholder="Пароль">
         <button class="btn" id="entry-btn">Войти / Создать</button>
@@ -49,7 +49,7 @@
 
 <div id="admin-screen">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2>Admin Console</h2>
+        <h2>Admin Panel</h2>
         <button class="btn" style="width:80px;" onclick="closeAdmin()">X</button>
     </div>
     <div id="admin-users"></div>
@@ -59,12 +59,12 @@
     <header>
         <span class="logo" onclick="adminAccess()">🅰️</span>
         <b id="my-handle">@user</b>
-        <span onclick="location.reload()" style="color:var(--red); cursor:pointer;">Выход</span>
+        <span onclick="location.reload()" style="color:var(--red); cursor:pointer; font-weight:bold;">Выйти</span>
     </header>
 
     <div class="tweet-box">
-        <textarea id="post-text" placeholder="Что нового?" rows="3"></textarea>
-        <input type="text" id="post-image" placeholder="Ссылка на фото (необязательно)">
+        <textarea id="post-text" placeholder="Напиши что-нибудь..."></textarea>
+        <input type="text" id="post-image" placeholder="Ссылка на фото (если нужно)">
         <div style="display:flex; justify-content:flex-end; margin-top:10px;">
             <button class="btn" style="width:120px; margin:0;" id="post-btn">Постить</button>
         </div>
@@ -93,14 +93,14 @@
     document.getElementById('entry-btn').onclick = async () => {
         const u = document.getElementById('login-id').value.trim().toLowerCase();
         const p = document.getElementById('login-pw').value.trim();
-        if(!u || !p) return;
+        if(!u || !p) return alert("Введи данные!");
 
         const q = query(collection(db, "users"), where("login", "==", u));
         const snap = await getDocs(q);
 
         if(snap.empty) {
             await addDoc(collection(db, "users"), { login: u, pass: p });
-            alert("Аккаунт создан! Заходи.");
+            alert("Аккаунт создан! Входи.");
         } else {
             let auth = false;
             snap.forEach(d => { if(d.data().pass === p) auth = true; });
@@ -110,7 +110,7 @@
                 document.getElementById('app-container').style.display = 'block';
                 document.getElementById('my-handle').innerText = "@" + u;
                 startApp();
-            } else alert("Имя занято или пароль неверный!");
+            } else alert("Неверный пароль!");
         }
     };
 
@@ -118,36 +118,44 @@
         const txt = document.getElementById('post-text').value.trim();
         const img = document.getElementById('post-image').value.trim();
         
-        if(!txt && !img) return alert("Нельзя отправить пустой пост!");
+        if(!txt && !img) return alert("Пусто!");
 
-        await addDoc(collection(db, "posts"), {
-            user: myUser,
-            content: txt,
-            image: img,
-            time: serverTimestamp()
-        });
-
-        document.getElementById('post-text').value = "";
-        document.getElementById('post-image').value = "";
+        try {
+            await addDoc(collection(db, "posts"), {
+                user: myUser,
+                content: txt,
+                image: img,
+                time: serverTimestamp()
+            });
+            document.getElementById('post-text').value = "";
+            document.getElementById('post-image').value = "";
+        } catch(e) { alert("Ошибка базы!"); }
     };
 
     function startApp() {
-        onSnapshot(query(collection(db, "posts"), orderBy("time", "desc")), (snap) => {
+        const q = query(collection(db, "posts"), orderBy("time", "desc"));
+        onSnapshot(q, (snap) => {
             const feed = document.getElementById('main-feed');
             feed.innerHTML = "";
             snap.forEach(d => {
                 const data = d.data();
-                if(!data.content && !data.image) return; // Игнорируем старые пустые посты
+                // ЖЕСТКАЯ ПРОВЕРКА НА ПУСТОТУ
+                if (!data.content && !data.image) return;
+
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
                 
-                feed.innerHTML += `
-                    <div class="post">
-                        <div class="avatar">${data.user[0].toUpperCase()}</div>
-                        <div class="post-body">
-                            <div class="post-user">@${data.user}</div>
-                            ${data.content ? `<div class="post-text">${data.content}</div>` : ''}
-                            ${data.image ? `<img src="${data.image}" class="post-img" onerror="this.style.display='none'">` : ''}
-                        </div>
-                    </div>`;
+                let postHTML = `
+                    <div class="avatar">${data.user ? data.user[0].toUpperCase() : '?'}</div>
+                    <div class="post-body">
+                        <span class="post-user">@${data.user}</span>
+                        ${data.content ? `<span class="post-text">${data.content}</span>` : ''}
+                        ${data.image ? `<img src="${data.image}" class="post-img" onerror="this.style.display='none'">` : ''}
+                    </div>
+                `;
+                
+                postDiv.innerHTML = postHTML;
+                feed.appendChild(postDiv);
             });
         });
     }
@@ -161,7 +169,7 @@
 
     async function loadAdmin() {
         const box = document.getElementById('admin-users');
-        box.innerHTML = "<h4>Users & Control</h4>";
+        box.innerHTML = "<h4>Управление</h4>";
         const snap = await getDocs(collection(db, "users"));
         snap.forEach(d => {
             box.innerHTML += `<div class="admin-item"><span>@${d.data().login}</span>
