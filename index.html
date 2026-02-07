@@ -3,65 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Network</title>
+    <title>Abol Network PRO</title>
     <style>
-        :root {
-            --primary: #1d9bf0;
-            --bg: #000000;
-            --surface: #16181c;
-            --text: #e7e9ea;
-            --border: #2f3336;
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
-        #app { width: 100%; max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; display: flex; flex-direction: column; }
+        :root { --primary: #1d9bf0; --bg: #000; --surface: #16181c; --text: #e7e9ea; --border: #2f3336; }
+        body { font-family: Segoe UI, Roboto; background: var(--bg); color: var(--text); margin: 0; }
         
-        .header { sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); padding: 15px; font-size: 20px; font-weight: bold; border-bottom: 1px solid var(--border); z-index: 10; }
+        /* Стили входа */
+        #auth-screen, #admin-panel { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card { background: var(--surface); padding: 30px; border-radius: 16px; width: 320px; box-shadow: 0 0 20px rgba(29, 155, 240, 0.2); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; }
         
-        /* Посты */
-        #feed { flex: 1; }
-        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; transition: 0.2s; }
-        .post:hover { background: #080808; }
-        .avatar { width: 48px; height: 48px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; flex-shrink: 0; }
-        .post-content { flex: 1; }
-        .post-header { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
-        .nickname { font-weight: bold; }
-        .username { color: #71767b; font-size: 14px; }
-        .post-text { line-height: 1.4; word-break: break-word; }
+        /* Лента */
+        #main-app { max-width: 600px; margin: 0 auto; border-inline: 1px solid var(--border); min-height: 100vh; display: none; }
+        header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; sticky; top: 0; background: rgba(0,0,0,0.8); }
+        .logo { font-size: 24px; cursor: pointer; user-select: none; }
         
-        /* Инпут */
-        .input-area { padding: 15px; border-bottom: 8px solid #202327; }
-        textarea { width: 100%; background: none; border: none; color: white; font-size: 18px; resize: none; outline: none; margin-bottom: 10px; }
-        .actions { display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 10px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:disabled { opacity: 0.5; }
+        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
+        .avatar { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .post-body { flex: 1; }
+        .p-user { font-weight: bold; font-size: 15px; }
+        .p-text { margin-top: 5px; line-height: 1.4; }
 
         /* Админка */
-        .admin-del { color: #f4212e; background: none; border: 1px solid #f4212e; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: auto; }
-        
-        /* Модалка входа */
-        #auth-overlay { position: fixed; inset: 0; background: rgba(91, 112, 131, 0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .auth-card { background: black; padding: 30px; border-radius: 16px; width: 300px; text-align: center; }
-        input.classic { width: 100%; padding: 12px; margin: 10px 0; background: black; border: 1px solid var(--border); color: white; border-radius: 4px; box-sizing: border-box; }
+        #admin-panel { display: none; background: #050505; }
+        .admin-list { width: 90%; max-width: 500px; overflow-y: auto; }
+        .admin-item { background: #1c1c1c; padding: 10px; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between; }
+        .del-btn { background: #f4212e; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-    <div class="auth-card">
-        <h2>Войти в Abol</h2>
-        <input type="text" id="nickInput" class="classic" placeholder="Ваше имя...">
-        <button class="btn" onclick="login()">Начать</button>
+<div id="auth-screen">
+    <div class="card">
+        <h2 style="text-align:center">Abol Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="pass" placeholder="Пароль">
+        <button class="btn" onclick="handleAuth('login')">Войти</button>
+        <p style="text-align:center; font-size:12px; color:gray; cursor:pointer" onclick="handleAuth('reg')">Нет аккаунта? Регистрация</p>
     </div>
 </div>
 
-<div id="app">
-    <div class="header">Главная</div>
-    
-    <div class="input-area">
-        <textarea id="postInput" placeholder="Что происходит?" rows="3"></textarea>
-        <div class="actions">
-            <button class="btn" onclick="sendPost()">Постить</button>
-        </div>
+<div id="admin-panel">
+    <h2>Админ-центр (Damir OS)</h2>
+    <div class="admin-list" id="userList"></div>
+    <button class="btn" style="width:200px; margin-top:20px; background:#333" onclick="closeAdmin()">Выйти из панели</button>
+</div>
+
+<div id="main-app">
+    <header>
+        <span class="logo" onclick="askAdmin()">🅰️</span>
+        <b>Abol Network</b>
+        <button onclick="logout()" style="background:none; border:none; color:gray; cursor:pointer">Выход</button>
+    </header>
+
+    <div style="padding:15px; border-bottom:8px solid #202327">
+        <textarea id="tweet" placeholder="Что нового?" style="width:100%; background:none; border:none; color:#fff; font-size:18px; outline:none; resize:none" rows="3"></textarea>
+        <button class="btn" style="width:100px; float:right" onclick="post()">Постить</button>
+        <div style="clear:both"></div>
     </div>
 
     <div id="feed"></div>
@@ -69,7 +68,8 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, limit, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
@@ -81,79 +81,96 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
-    let currentUser = localStorage.getItem('abolUser') || "";
-    let isAdmin = false;
 
-    // Авторизация
-    if (currentUser) document.getElementById('auth-overlay').style.display = 'none';
-    window.login = () => {
-        const nick = document.getElementById('nickInput').value.trim();
-        if (nick) {
-            currentUser = nick;
-            localStorage.setItem('abolUser', nick);
-            document.getElementById('auth-overlay').style.display = 'none';
-        }
-    };
-
-    // Отправка поста
-    window.sendPost = async () => {
-        const text = document.getElementById('postInput').value.trim();
-        if (!text) return;
-
-        // Секретный вход в админку через поле ввода поста
-        if (text === "/admin 3232damir4ik") {
-            isAdmin = true;
-            alert("Админ-панель активирована!");
-            document.getElementById('postInput').value = "";
-            return;
-        }
-
+    // ВЕРИФИКАЦИЯ
+    window.handleAuth = async (type) => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('pass').value;
         try {
-            await addDoc(collection(db, "posts"), {
-                user: currentUser,
-                text: text,
-                createdAt: serverTimestamp()
-            });
-            document.getElementById('postInput').value = "";
-        } catch (e) { alert("Ошибка публикации"); }
+            if(type === 'reg') await createUserWithEmailAndPassword(auth, email, pass);
+            else await signInWithEmailAndPassword(auth, email, pass);
+        } catch (e) { alert("Ошибка: " + e.message); }
     };
 
-    // Удаление (только для админа)
-    window.deletePost = async (id) => {
-        if (isAdmin && confirm("Удалить этот пост?")) {
-            await deleteDoc(doc(db, "posts", id));
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            loadFeed();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+        }
+    });
+
+    window.logout = () => signOut(auth);
+
+    // ПОСТЫ
+    window.post = async () => {
+        const txt = document.getElementById('tweet').value;
+        if(!txt) return;
+        await addDoc(collection(db, "posts"), {
+            uid: auth.currentUser.uid,
+            email: auth.currentUser.email,
+            text: txt,
+            at: serverTimestamp()
+        });
+        document.getElementById('tweet').value = "";
+    };
+
+    function loadFeed() {
+        const q = query(collection(db, "posts"), orderBy("at", "desc"));
+        onSnapshot(q, (snap) => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = "";
+            snap.forEach(pDoc => {
+                const p = pDoc.data();
+                feed.innerHTML += `
+                    <div class="post">
+                        <div class="avatar">${p.email[0].toUpperCase()}</div>
+                        <div class="post-body">
+                            <div class="p-user">${p.email}</div>
+                            <div class="p-text">${p.text}</div>
+                        </div>
+                    </div>`;
+            });
+        });
+    }
+
+    // АДМИН-ПАНЕЛЬ
+    window.askAdmin = () => {
+        const p = prompt("Введите пароль администратора:");
+        if (p === "3232damir4ik") {
+            document.getElementById('admin-panel').style.display = 'flex';
+            loadAdminData();
+        } else {
+            alert("Доступ запрещен!");
         }
     };
 
-    // Загрузка ленты
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(100));
-    
-    onSnapshot(q, (snapshot) => {
-        const feed = document.getElementById('feed');
-        feed.innerHTML = "";
-        snapshot.forEach((postDoc) => {
-            const d = postDoc.data();
-            const id = postDoc.id;
-            const initials = d.user ? d.user.substring(0,2).toUpperCase() : "??";
-            
-            const postHtml = `
-                <div class="post">
-                    <div class="avatar">${initials}</div>
-                    <div class="post-content">
-                        <div class="post-header">
-                            <span class="nickname">${d.user}</span>
-                            <span class="username">@${d.user.toLowerCase().replace(/\s/g, '')}</span>
-                            ${isAdmin ? `<button class="admin-del" onclick="deletePost('${id}')">Удалить</button>` : ''}
-                        </div>
-                        <div class="post-text">${d.text}</div>
-                    </div>
-                </div>
-            `;
-            feed.insertAdjacentHTML('beforeend', postHtml);
+    async function loadAdminData() {
+        const list = document.getElementById('userList');
+        list.innerHTML = "<h3>Управление постами (Все посты):</h3>";
+        const q = await getDocs(collection(db, "posts"));
+        q.forEach(d => {
+            list.innerHTML += `
+                <div class="admin-item">
+                    <span>${d.data().email}: ${d.data().text.substring(0,20)}...</span>
+                    <button class="del-btn" onclick="delPost('${d.id}')">Удалить</button>
+                </div>`;
         });
-    });
-</script>
+    }
 
+    window.delPost = async (id) => {
+        await deleteDoc(doc(db, "posts", id));
+        loadAdminData();
+    };
+
+    window.closeAdmin = () => {
+        document.getElementById('admin-panel').style.display = 'none';
+    };
+</script>
 </body>
 </html>
