@@ -3,36 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abol Messenger - Fixed</title>
+    <title>Abol Network</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0e1621; color: white; margin: 0; display: flex; justify-content: center; height: 100vh; }
-        #chat { background: #17212b; width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; border: 1px solid #242f3d; }
-        .header { background: #242f3d; padding: 15px; text-align: center; font-weight: bold; }
-        #messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #0e1621; }
-        .msg { margin: 5px 0; padding: 10px 14px; border-radius: 12px; max-width: 80%; word-wrap: break-word; }
-        .my-msg { align-self: flex-end; background: #2b5278; border-bottom-right-radius: 2px; }
-        .other-msg { align-self: flex-start; background: #182533; border-bottom-left-radius: 2px; }
-        .system-msg { align-self: center; background: rgba(255, 255, 255, 0.05); font-size: 11px; color: #777; border-radius: 4px; padding: 5px 15px; margin: 8px 0; text-align: center; }
-        .user-label { font-size: 11px; color: #50a2e3; font-weight: bold; display: block; margin-bottom: 4px; }
-        .input-box { padding: 15px; display: flex; background: #17212b; border-top: 1px solid #242f3d; }
-        input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; background: #1f2936; color: white; outline: none; }
-        button { margin-left: 8px; width: 45px; height: 45px; background: #50a2e3; border: none; color: white; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        :root {
+            --primary: #1d9bf0;
+            --bg: #000000;
+            --surface: #16181c;
+            --text: #e7e9ea;
+            --border: #2f3336;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
+        #app { width: 100%; max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        .header { sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); padding: 15px; font-size: 20px; font-weight: bold; border-bottom: 1px solid var(--border); z-index: 10; }
+        
+        /* Посты */
+        #feed { flex: 1; }
+        .post { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; transition: 0.2s; }
+        .post:hover { background: #080808; }
+        .avatar { width: 48px; height: 48px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; flex-shrink: 0; }
+        .post-content { flex: 1; }
+        .post-header { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+        .nickname { font-weight: bold; }
+        .username { color: #71767b; font-size: 14px; }
+        .post-text { line-height: 1.4; word-break: break-word; }
+        
+        /* Инпут */
+        .input-area { padding: 15px; border-bottom: 8px solid #202327; }
+        textarea { width: 100%; background: none; border: none; color: white; font-size: 18px; resize: none; outline: none; margin-bottom: 10px; }
+        .actions { display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 10px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:disabled { opacity: 0.5; }
+
+        /* Админка */
+        .admin-del { color: #f4212e; background: none; border: 1px solid #f4212e; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: auto; }
+        
+        /* Модалка входа */
+        #auth-overlay { position: fixed; inset: 0; background: rgba(91, 112, 131, 0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .auth-card { background: black; padding: 30px; border-radius: 16px; width: 300px; text-align: center; }
+        input.classic { width: 100%; padding: 12px; margin: 10px 0; background: black; border: 1px solid var(--border); color: white; border-radius: 4px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<div id="chat">
-    <div class="header">Abol Messenger v1.3</div>
-    <div id="messages"></div>
-    <div class="input-box">
-        <input type="text" id="msgInput" placeholder="Сообщение или /help...">
-        <button onclick="handleSend()">➤</button>
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h2>Войти в Abol</h2>
+        <input type="text" id="nickInput" class="classic" placeholder="Ваше имя...">
+        <button class="btn" onclick="login()">Начать</button>
     </div>
+</div>
+
+<div id="app">
+    <div class="header">Главная</div>
+    
+    <div class="input-area">
+        <textarea id="postInput" placeholder="Что происходит?" rows="3"></textarea>
+        <div class="actions">
+            <button class="btn" onclick="sendPost()">Постить</button>
+        </div>
+    </div>
+
+    <div id="feed"></div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, limit, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBz8fnaJ_mpCE5Vv83doxBb6nTybDSBmlI",
@@ -45,68 +82,77 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let myNick = localStorage.getItem('chatNick') || "дамирка";
-    const box = document.getElementById('messages');
+    let currentUser = localStorage.getItem('abolUser') || "";
+    let isAdmin = false;
 
-    function addSys(txt) {
-        const d = document.createElement('div');
-        d.className = 'system-msg';
-        d.innerText = txt;
-        box.appendChild(d);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    window.handleSend = async () => {
-        const input = document.getElementById('msgInput');
-        const val = input.value.trim();
-        if (!val) return;
-
-        // ОБРАБОТКА КОМАНД
-        if (val.startsWith('/')) {
-            const p = val.split(' ');
-            const cmd = p[0].toLowerCase();
-            if (cmd === '/clear') { box.innerHTML = ""; addSys("Очищено"); }
-            else if (cmd === '/nick' && p[1]) { myNick = p[1]; localStorage.setItem('chatNick', myNick); addSys("Ник изменен на " + myNick); }
-            else if (cmd === '/help') { addSys("Команды: /clear, /nick ИМЯ, /about"); }
-            else if (cmd === '/about') { addSys("Abol Messenger для " + myNick); }
-            else { addSys("Неизвестная команда"); }
-            input.value = ""; return;
+    // Авторизация
+    if (currentUser) document.getElementById('auth-overlay').style.display = 'none';
+    window.login = () => {
+        const nick = document.getElementById('nickInput').value.trim();
+        if (nick) {
+            currentUser = nick;
+            localStorage.setItem('abolUser', nick);
+            document.getElementById('auth-overlay').style.display = 'none';
         }
-
-        // ОТПРАВКА
-        try {
-            await addDoc(collection(db, "messages"), {
-                user: myNick,
-                text: val,
-                createdAt: serverTimestamp()
-            });
-            input.value = "";
-        } catch (e) { addSys("Ошибка отправки!"); }
     };
 
-    // ГЛАВНОЕ: ПОЛУЧЕНИЕ СООБЩЕНИЙ (ИСПРАВЛЕНО)
-    // Берем последние 50 сообщений, чтобы не перегружать телефон
-    const q = query(collection(db, "messages"), orderBy("createdAt", "asc"), limitToLast(50));
+    // Отправка поста
+    window.sendPost = async () => {
+        const text = document.getElementById('postInput').value.trim();
+        if (!text) return;
+
+        // Секретный вход в админку через поле ввода поста
+        if (text === "/admin 3232damir4ik") {
+            isAdmin = true;
+            alert("Админ-панель активирована!");
+            document.getElementById('postInput').value = "";
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "posts"), {
+                user: currentUser,
+                text: text,
+                createdAt: serverTimestamp()
+            });
+            document.getElementById('postInput').value = "";
+        } catch (e) { alert("Ошибка публикации"); }
+    };
+
+    // Удаление (только для админа)
+    window.deletePost = async (id) => {
+        if (isAdmin && confirm("Удалить этот пост?")) {
+            await deleteDoc(doc(db, "posts", id));
+        }
+    };
+
+    // Загрузка ленты
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(100));
     
     onSnapshot(q, (snapshot) => {
-        box.innerHTML = ""; // Перерисовываем всё окно, чтобы данные не двоились
-        snapshot.forEach((doc) => {
-            const d = doc.data();
-            if (!d.text) return;
-
-            const isMy = d.user === myNick;
-            const item = document.createElement('div');
-            item.className = 'msg ' + (isMy ? 'my-msg' : 'other-msg');
-            item.innerHTML = `<span class="user-label">${d.user}</span>${d.text}`;
-            box.appendChild(item);
+        const feed = document.getElementById('feed');
+        feed.innerHTML = "";
+        snapshot.forEach((postDoc) => {
+            const d = postDoc.data();
+            const id = postDoc.id;
+            const initials = d.user ? d.user.substring(0,2).toUpperCase() : "??";
+            
+            const postHtml = `
+                <div class="post">
+                    <div class="avatar">${initials}</div>
+                    <div class="post-content">
+                        <div class="post-header">
+                            <span class="nickname">${d.user}</span>
+                            <span class="username">@${d.user.toLowerCase().replace(/\s/g, '')}</span>
+                            ${isAdmin ? `<button class="admin-del" onclick="deletePost('${id}')">Удалить</button>` : ''}
+                        </div>
+                        <div class="post-text">${d.text}</div>
+                    </div>
+                </div>
+            `;
+            feed.insertAdjacentHTML('beforeend', postHtml);
         });
-        box.scrollTop = box.scrollHeight;
-    }, (err) => {
-        addSys("Ошибка базы! Проверь интернет.");
     });
-
-    document.getElementById('msgInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleSend(); });
-    addSys("Abol Messenger готов!");
 </script>
 
 </body>
